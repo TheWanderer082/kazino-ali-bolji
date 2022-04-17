@@ -1,0 +1,278 @@
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include <time.h>
+#include <string>
+using namespace sf;
+using namespace std;
+Text settext(int charsize ,int x, int y, int outlinethickness,Color txtcolor,Color outlinecolor, string txt)
+{
+    Vector2f position(x, y);
+    Text funtext;
+    funtext.setCharacterSize(charsize);
+    funtext.setPosition(position);
+    funtext.setFillColor(txtcolor);
+    funtext.setOutlineColor(outlinecolor);
+    funtext.setOutlineThickness(outlinethickness);
+
+    funtext.setString(txt);
+    return funtext;
+
+}
+Sprite setsprite(int x , int y ,float xscale , float yscale)
+{
+    Sprite funsprite;
+    Vector2f spriteposition(x, y);
+    funsprite.setPosition(spriteposition);
+    funsprite.setScale(xscale, yscale);
+
+    return funsprite;
+}
+
+
+
+string karta_random()
+{
+    string row = "row-";
+    string column = "-column-";
+    int brow = rand() % 4 + 1;
+    int bcolumn = rand() % 13 + 1;
+    string sbrow = to_string(brow);
+    string sbcolumn = to_string(bcolumn);
+    string slika = row + sbrow + column + sbcolumn + ".png";
+
+
+    return slika ;
+
+}
+int main()
+{
+    RenderWindow window(VideoMode(1920, 1080), "Mrtvi UI", Style::Fullscreen);
+    window.setFramerateLimit(60);
+
+    SoundBuffer buffer_collide;
+    buffer_collide.loadFromFile("sfx.wav");
+
+    Sound collision;
+    collision.setBuffer(buffer_collide);
+
+
+    Text txtleave;
+    Text txtplay;
+    Text txtblackjack;
+    Font font;
+    font.loadFromFile("piksel.ttf");
+
+    txtblackjack = settext(200 , 550 , 280 , 5 ,Color::Yellow, Color::Black,"BLACKJACK");
+    txtblackjack.setFont(font);
+
+
+    txtleave = settext(70 , 890 , 680 , 5 ,Color::Yellow, Color::Black,"Leave");
+    txtleave.setFont(font);
+
+
+    txtplay = settext(70 , 890 , 580 , 5,Color::Yellow, Color::Black,"Play");
+    txtplay.setFont(font);
+
+    Sprite karta;
+    Texture randtexture;
+    string random;
+
+    randtexture.loadFromFile("row-1-column-1.png");
+    Vector2f kartapozicija(960 , 400);
+    karta = setsprite(960 , 400 , 4.5 , 4.5 );
+    karta.setTexture(randtexture);
+
+    float xvelocity = 3;
+    float yvelocity = 3.5;
+
+    UI:
+
+    while(window.isOpen())
+    {
+        Event event;
+        while (window.pollEvent(event))
+        {
+           if(Keyboard::isKeyPressed(Keyboard::Escape))window.close();
+        }
+
+    Vector2f mis = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+    FloatRect bounds_leave = txtleave.getGlobalBounds();
+    FloatRect bounds_play = txtplay.getGlobalBounds();
+
+    if (Mouse::isButtonPressed(Mouse::Left))
+    {
+        if (bounds_leave.contains(mis))
+        {
+            window.close();
+        }
+    }
+    if (Mouse::isButtonPressed(Mouse::Left))
+    {
+        if (bounds_play.contains(mis))
+        {
+            goto igraj;
+        }
+    }
+            if (bounds_leave.contains(mis))txtleave.setFillColor(Color(60,105,60));
+        else
+        {
+            txtleave.setFillColor(Color::Yellow);
+        }
+             if (bounds_play.contains(mis))txtplay.setFillColor(Color(60,105,60));
+        else
+        {
+            txtplay.setFillColor(Color::Yellow);
+        }
+        if (kartapozicija.x < -80 || kartapozicija.x > 1684)
+        {
+            xvelocity *= -1;
+            random = karta_random();
+            randtexture.loadFromFile(random);
+            karta.setTexture(randtexture);
+            collision.play();
+
+        }
+
+        if (kartapozicija.y <-10 || kartapozicija.y > 786)
+        {
+            yvelocity *= -1;
+            random = karta_random();
+            randtexture.loadFromFile(random);
+            karta.setTexture(randtexture);
+            collision.play();
+
+        }
+        kartapozicija.x += xvelocity;
+        kartapozicija.y += yvelocity;
+        karta.setPosition(kartapozicija);
+        window.clear(Color(60,105,60));
+        window.draw(karta);
+        window.draw(txtblackjack);
+        window.draw(txtleave);
+        window.draw(txtplay);
+        window.display();
+    }
+
+    igraj:
+
+    Texture bg;
+    bg.loadFromFile("sto.png");
+    Sprite background;
+    background = setsprite(0 , 0, 1.86 , 1.86);
+    background.setTexture(bg);
+
+    Texture tgreen_arrow ,tyellow_arrow;
+    Sprite arrow;
+    tyellow_arrow.loadFromFile("strelica2.png");
+    tgreen_arrow.loadFromFile("strelica1.png");
+    arrow = setsprite(10 , 0 , 5 , 5);
+    arrow.setTexture(tyellow_arrow);
+    FloatRect bounds_arrow  = arrow.getGlobalBounds();
+
+    Texture tdeck;
+    tdeck.loadFromFile("deck.png"); // napravio sliku za deck
+    Sprite deck;
+    deck = setsprite (1600 , 400, 4.5 , 4.5); // nacrtao deck
+    deck.setTexture(tdeck);
+
+    Text hit, stand, cash;
+    int p = 100;
+    string pare = to_string(p);
+    string amount_cash = pare + " $";
+
+    cash = settext(80 , 1680 , 20 , 5 ,Color::Yellow , Color::Black , amount_cash);
+    cash.setFont(font);
+    hit = settext(80 , 1680 , 700 , 5 ,Color::Yellow , Color::Black , "Hit");
+    hit.setFont(font);
+    stand = settext(80 , 1680 , 800 , 5 ,Color::Yellow , Color::Black , "Stand");
+    stand.setFont(font);
+    FloatRect hbounds = hit.getGlobalBounds(); // ovde sam saznao da nema potrebe za pravljenjem pravougaonika
+    FloatRect sbounds = stand.getGlobalBounds();
+
+    /*Texture base;
+    base.loadFromFile("row-3-column-14.png");
+    int xplayer = 100 , yplayer = 550 , xdealer , ydealer;
+    Sprite testkarta;
+    testkarta = setsprite(xplayer , yplayer , 4.5 , 4.5);
+    testkarta.setTexture(base);
+    Sprite testkarta1;
+    testkarta1 = setsprite(100 , 130 , 4.5 , 4.5);
+    testkarta1.setTexture(base);*/
+    //ovo sam drkao da vidim gde je najbolji polozaj za karte
+
+
+    bool start = true;
+
+while(window.isOpen())
+{
+    Event esc;
+  while(window.pollEvent(esc))
+    {
+        if(Keyboard::isKeyPressed(Keyboard::Escape))window.close();
+    }
+
+        if(start)
+    {
+    //ovde kao sta da se desi kad krene
+
+
+
+
+
+        start = false;
+    }
+
+
+    Vector2f mis = window.mapPixelToCoords(Mouse::getPosition(window));
+    if(bounds_arrow.contains(mis))arrow.setTexture(tgreen_arrow);
+        else
+        {
+            arrow.setTexture(tyellow_arrow);
+        }
+    if(bounds_arrow.contains(mis) && Mouse::isButtonPressed(Mouse::Left))
+    {
+        goto UI;
+    }
+
+    if(hbounds.contains(mis))hit.setFillColor(Color(60 , 105 , 60));
+        else
+        {
+            hit.setFillColor(Color::Yellow);
+        }
+    if(sbounds.contains(mis))stand.setFillColor(Color(60 , 105 , 60));
+        else
+        {
+            stand.setFillColor(Color::Yellow);
+        }
+    if(sbounds.contains(mis) && Mouse::isButtonPressed(Mouse::Left))
+    {
+        //ovde sta se desi kad kliknes stand
+    }
+
+    if(hbounds.contains(mis) && Mouse::isButtonPressed(Mouse::Left))
+    {
+        // a ovde sta se desi kad kliknes hit
+    }
+
+
+
+
+
+
+
+
+    window.clear();
+    window.draw(background);
+    window.draw(arrow);
+    window.draw(deck);
+    window.draw(hit);
+    window.draw(stand);
+    window.draw(cash);
+    window.display();
+
+}
+
+
+
+
+}
