@@ -438,7 +438,31 @@ while(window.isOpen())
             x_karte = x_karte + 100;
 
         }
-
+        if (dealer_zbir == 21){
+            // idi na gubitnika
+            Sleep(1000);
+            goto mama_raised_a_bitch;
+        }
+        if (dealer_zbir > 21){
+            // idi na pobedu
+            Sleep(1000);
+            goto dubz;
+        }
+        if (dealer_zbir > sum_of_cards){
+            // idi na gubitnika
+            Sleep(1000);
+            goto mama_raised_a_bitch;
+        }
+        if (sum_of_cards > dealer_zbir){
+            // idi na pobedu
+            Sleep(1000);
+            goto dubz;
+        }
+        if (sum_of_cards == dealer_zbir){
+            // idi na nereseno
+            Sleep(1000);
+            goto remi;
+        }
         while (sbounds.contains(mis) && Mouse::isButtonPressed(Mouse::Left)){
 
         }
@@ -452,8 +476,16 @@ while(window.isOpen())
         sum_of_cards =sum_of_cards + karte[order].vrednost;
         sp_for_draw[sp_size++].setTexture(karte[order--].pic);
         x_karte = x_karte + 100;
-
-
+        if (sum_of_cards == 21){
+            // idi na pobeda
+            Sleep(1000);
+            goto dubz;
+        }
+        if (sum_of_cards > 21){
+            // idi na gubitnika
+            Sleep(1000);
+            goto mama_raised_a_bitch;
+        }
         while(hbounds.contains(mis) && Mouse::isButtonPressed(Mouse::Left)){
 
         }
@@ -492,5 +524,16 @@ while(window.isOpen())
 
 }
 
+    dubz:
+        cout << "dubz";
 
+        return 0;
+    mama_raised_a_bitch:
+        cout << "lost";
+
+        return 0;
+    remi:
+        cout << "remi";
+
+        return 0;
 }
