@@ -244,7 +244,6 @@ FloatRect sbounds, hbounds;
 
 bool start;
 
-enderWindow window(VideoMode(1920, 1080), "Mrtvi UI", Style::Fullscreen);
 
 int its_almost_dry = -9;
 
@@ -252,6 +251,8 @@ int do_blackjack()
 {
 
     font.loadFromFile("piksel.ttf");
+
+    RenderWindow window(VideoMode(1920, 1080), "Mrtvi UI", Style::Fullscreen);
     window.setFramerateLimit(60);
 
     txt_size = 9;
@@ -506,7 +507,8 @@ void blackjack_homepage()
 {
 
     font.loadFromFile("piksel.ttf");
-    
+
+    RenderWindow window(VideoMode(1920, 1080), "Mrtvi UI", Style::Fullscreen);
     window.setFramerateLimit(60);
 
 
@@ -635,4 +637,7 @@ int main()
 
 
 }
+
+
+
 
